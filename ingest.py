@@ -25,7 +25,7 @@ MONGODB_COLLECTION = os.getenv("MONGODB_COLLECTION")  # rules
 
 PDF_PATH      = "fifa_laws.pdf"   # ← put your PDF here
 CHUNK_SIZE    = 1000              # characters per chunk
-CHUNK_OVERLAP = 150               # overlap between chunks
+CHUNK_OVERLAP = 300               # overlap between chunks
 EMBED_MODEL   = "all-MiniLM-L6-v2"  # 384 dimensions, downloads automatically on first run
 
 
