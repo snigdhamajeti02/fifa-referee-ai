@@ -278,7 +278,7 @@ elif analyze and not situation.strip():
 st.markdown('<hr class="divider"/>', unsafe_allow_html=True)
 st.markdown(
     '<p style="text-align:center;color:#374151;font-size:0.78rem;">'
-    'Powered by FIFA Laws of the Game · MongoDB Atlas Vector Search · OpenAI'
+    'Powered by FIFA Laws of the Game · MongoDB Atlas Vector Search · Groq'
     '</p>',
     unsafe_allow_html=True,
 )
