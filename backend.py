@@ -201,4 +201,6 @@ def search_and_answer(situation: str) -> dict:
     )
     
     raw = response.choices[0].message.content
-    return parse_response(raw)
+    result = parse_response(raw)
+    result["retrieved_chunks"] = chunks
+    return result
