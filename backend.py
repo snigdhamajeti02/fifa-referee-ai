@@ -25,7 +25,7 @@ GROQ_API_KEY       = os.getenv("GROQ_API_KEY")
 
 EMBED_MODEL    = "all-mpnet-base-v2"              # same model used in ingest.py, 768 dimensions
 RERANK_MODEL   = "cross-encoder/ms-marco-MiniLM-L-6-v2"  # re-ranks retrieved chunks
-CHAT_MODEL     = "llama-3.1-8b-instant"           # free Groq model, fast
+CHAT_MODEL     = "llama-3.3-70b-versatile"        # free Groq model, better reasoning
 TOP_K          = 15                               # candidates to retrieve before re-ranking
 RERANK_TOP_K   = 5                                # chunks to keep after re-ranking
 
