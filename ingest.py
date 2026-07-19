@@ -25,7 +25,7 @@ MONGODB_DB         = os.getenv("MONGODB_DB")          # fifa_rules
 MONGODB_COLLECTION = os.getenv("MONGODB_COLLECTION")  # rules
 
 PDF_PATH      = "fifa_laws.pdf"   # ← put your PDF here
-CHUNK_SIZE    = 1000              # characters per chunk
+CHUNK_SIZE    = 1500              # characters per chunk
 CHUNK_OVERLAP = 300               # overlap between chunks
 EMBED_MODEL   = "all-mpnet-base-v2"  # 768 dimensions, better semantic accuracy
 
