@@ -1,0 +1,19 @@
+# Environment variables (contains real credentials)
+.env
+
+# PDF (large binary, not needed in repo)
+fifa_laws.pdf
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# IDE
+.vscode/
+.idea/
