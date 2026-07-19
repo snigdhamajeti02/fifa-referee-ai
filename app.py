@@ -215,7 +215,7 @@ cols = st.columns(2)
 for i, example in enumerate(EXAMPLES):
     with cols[i % 2]:
         if st.button(example, key=f"ex_{i}", use_container_width=True):
-            st.session_state.situation = example
+            st.session_state.situation_input = example
             st.session_state.result = None
 
 st.markdown('<hr class="divider"/>', unsafe_allow_html=True)
