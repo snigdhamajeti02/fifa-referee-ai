@@ -270,13 +270,6 @@ if result:
             unsafe_allow_html=True,
         )
 
-    # Debug: show retrieved chunks
-    if result.get("retrieved_chunks"):
-        with st.expander("Retrieved rulebook chunks (debug)"):
-            for i, chunk in enumerate(result["retrieved_chunks"], 1):
-                st.markdown(f"**Chunk {i}**")
-                st.text(chunk)
-                st.divider()
 
 elif analyze and not situation.strip():
     st.warning("Please describe a situation first.")
