@@ -25,7 +25,7 @@ GROQ_API_KEY       = os.getenv("GROQ_API_KEY")
 
 EMBED_MODEL = "all-MiniLM-L6-v2"        # same model used in ingest.py
 CHAT_MODEL  = "llama-3.1-8b-instant"    # free Groq model, fast
-TOP_K       = 5                          # chunks to retrieve from MongoDB
+TOP_K       = 8                          # chunks to retrieve from MongoDB
 
 
 # ─────────────────────────────────────────────────────────────────────────────
