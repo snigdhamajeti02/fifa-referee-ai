@@ -186,9 +186,9 @@ def search_and_answer(situation: str) -> dict:
     
     model = SentenceTransformer(EMBED_MODEL)
     mongo_client = MongoClient(MONGODB_URI)
-    
+
     collection = mongo_client[MONGODB_DB][MONGODB_COLLECTION]
-    
+
     query_vector = get_query_embedding(model, situation)
     chunks = search_mongodb(collection, query_vector, TOP_K)
     prompt = build_prompt(situation, chunks)
