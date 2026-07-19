@@ -57,7 +57,7 @@ def split_into_chunks(text: str, chunk_size: int, overlap: int) -> list[str]:
     Return the list of chunk strings.
     """
     
-    # Split by paragraph boundaries first to keep legal clauses intact
+    # Split on paragraph and Law boundaries to keep legal clauses intact
     paragraphs = [p.strip() for p in re.split(r'\n\s*\n|\n(?=Law \d)', text) if p.strip()]
 
     chunks = []
