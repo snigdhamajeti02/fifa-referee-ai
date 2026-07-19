@@ -190,7 +190,7 @@ div[data-testid="stButton"] > button:hover {
 st.markdown("""
 <div class="app-header">
     <h1>⚽ FIFA Referee AI</h1>
-    <p>Describe any football situation — get the official ruling and explanation.</p>
+    <p>Describe any football situation and get the official ruling and explanation.</p>
 </div>
 <hr class="divider"/>
 """, unsafe_allow_html=True)
