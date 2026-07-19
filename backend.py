@@ -15,7 +15,7 @@ load_dotenv()
 
 # INSTALL: pip install groq sentence-transformers pymongo python-dotenv
 from groq import Groq
-from sentence_transformers import SentenceTransformer
+from sentence_transformers import SentenceTransformer, CrossEncoder
 from pymongo import MongoClient
 
 MONGODB_URI        = os.getenv("MONGODB_URI")
@@ -23,9 +23,11 @@ MONGODB_DB         = os.getenv("MONGODB_DB")
 MONGODB_COLLECTION = os.getenv("MONGODB_COLLECTION")
 GROQ_API_KEY       = os.getenv("GROQ_API_KEY")
 
-EMBED_MODEL = "all-mpnet-base-v2"        # same model used in ingest.py, 768 dimensions
-CHAT_MODEL  = "llama-3.1-8b-instant"    # free Groq model, fast
-TOP_K       = 8                          # chunks to retrieve from MongoDB
+EMBED_MODEL    = "all-mpnet-base-v2"              # same model used in ingest.py, 768 dimensions
+RERANK_MODEL   = "cross-encoder/ms-marco-MiniLM-L-6-v2"  # re-ranks retrieved chunks
+CHAT_MODEL     = "llama-3.1-8b-instant"           # free Groq model, fast
+TOP_K          = 15                               # candidates to retrieve before re-ranking
+RERANK_TOP_K   = 5                                # chunks to keep after re-ranking
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -185,12 +187,19 @@ def search_and_answer(situation: str) -> dict:
     """
     
     model = SentenceTransformer(EMBED_MODEL)
+    reranker = CrossEncoder(RERANK_MODEL)
     mongo_client = MongoClient(MONGODB_URI)
 
     collection = mongo_client[MONGODB_DB][MONGODB_COLLECTION]
 
     query_vector = get_query_embedding(model, situation)
-    chunks = search_mongodb(collection, query_vector, TOP_K)
+    candidates = search_mongodb(collection, query_vector, TOP_K)
+
+    # Re-rank candidates by relevance to the question, keep top RERANK_TOP_K
+    scores = reranker.predict([(situation, chunk) for chunk in candidates])
+    ranked = sorted(zip(scores, candidates), key=lambda x: x[0], reverse=True)
+    chunks = [chunk for _, chunk in ranked[:RERANK_TOP_K]]
+
     prompt = build_prompt(situation, chunks)
     
     client = Groq(api_key=GROQ_API_KEY)

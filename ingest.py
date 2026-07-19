@@ -10,6 +10,7 @@ on the `embedding` field.
 """
 
 import os
+import re
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -56,18 +57,31 @@ def split_into_chunks(text: str, chunk_size: int, overlap: int) -> list[str]:
     Return the list of chunk strings.
     """
     
-    sentences = [s.strip() for s in text.replace("\n", " ").split(". ") if s.strip()]
+    # Split by paragraph boundaries first to keep legal clauses intact
+    paragraphs = [p.strip() for p in re.split(r'\n\s*\n|\n(?=Law \d)', text) if p.strip()]
+
     chunks = []
     current = ""
 
-    for sentence in sentences:
-        sentence = sentence + ". "
-        if len(current) + len(sentence) <= chunk_size:
-            current += sentence
+    for para in paragraphs:
+        if len(current) + len(para) + 2 <= chunk_size:
+            current = (current + "\n\n" + para).strip()
         else:
             if current:
-                chunks.append(current.strip())
-            current = current[-overlap:] + sentence if overlap else sentence
+                chunks.append(current)
+            if len(para) <= chunk_size:
+                current = para
+            else:
+                # Paragraph too long — fall back to sentence splitting
+                sentences = [s.strip() + ". " for s in para.split(". ") if s.strip()]
+                current = ""
+                for sentence in sentences:
+                    if len(current) + len(sentence) <= chunk_size:
+                        current += sentence
+                    else:
+                        if current:
+                            chunks.append(current.strip())
+                        current = current[-overlap:] + sentence if overlap else sentence
 
     if current.strip():
         chunks.append(current.strip())
