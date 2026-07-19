@@ -1,6 +1,8 @@
 # FIFA Referee AI
 
-A Retrieval-Augmented Generation (RAG) application that answers football referee questions using the official FIFA Laws of the Game. Describe any match situation and get the official ruling, the relevant law, an explanation, and a direct quote from the rulebook.
+A Retrieval-Augmented Generation (RAG) application that answers football referee questions using the official IFAB Laws of the Game. Describe any match situation and get the official ruling, the relevant law, an explanation, and a direct quote from the rulebook.
+
+**Live demo:** https://fifa-referee-ai-jfqlch6fya2suydsqhfgmk.streamlit.app
 
 ---
 
@@ -77,7 +79,7 @@ fifa-rag/
     app.py          -- Streamlit frontend
     requirements.txt
     .env.example    -- copy to .env and fill in your credentials
-    fifa_laws.pdf   -- place your FIFA Laws of the Game PDF here
+    fifa_laws.pdf   -- place the IFAB Laws of the Game PDF here (not committed)
 ```
 
 ---
@@ -87,10 +89,9 @@ fifa-rag/
 ### 1. Clone and install dependencies
 
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/snigdhamajeti02/fifa-referee-ai
 cd fifa-rag
 pip install -r requirements.txt
-pip install sentence-transformers groq
 ```
 
 ### 2. Set up environment variables
@@ -113,7 +114,9 @@ GROQ_API_KEY=your_groq_api_key
 
 ### 3. Add the PDF
 
-Place the FIFA Laws of the Game PDF in the project folder as `fifa_laws.pdf`.
+Download the IFAB Laws of the Game PDF from https://www.theifab.com/laws-of-the-game/ and save it as `fifa_laws.pdf` in the project folder.
+
+> Important: use the IFAB Laws of the Game, not FIFA competition regulations. They are different documents.
 
 ### 4. Run ingestion
 
@@ -125,7 +128,7 @@ This will:
 - Extract text from the PDF
 - Split it into sentence-aware chunks
 - Embed each chunk using all-MiniLM-L6-v2
-- Insert 155 documents into MongoDB
+- Insert 301 documents into MongoDB
 - Create a cosine similarity vector search index
 
 ### 5. Run the app
@@ -141,19 +144,39 @@ Open `http://localhost:8501` in your browser.
 ## Example Questions
 
 - A player scores directly from a throw-in
-- The ball hits the referee and goes into the goal during open play
-- A substitute enters the pitch before the substituted player has left
+- A player is in an offside position when the ball is played but does not touch it
 - A goalkeeper drops the ball and picks it up again without an opponent touching it
+- The ball hits the referee and goes into the goal during open play
 
 ---
 
 ## Evaluation
 
-The system was tested against a set of rule scenarios. Key observations:
+Tested against 5 rule scenarios using the IFAB Laws of the Game 2026/27:
 
-- **Correct rulings**: offside, handball, substitution, and restart rules are retrieved and answered accurately
-- **Edge cases**: situations involving indirect free kicks, dropped balls, and Law 12 handball are handled well with the improved chunking (1000-char sentence-aware chunks)
-- **Limitations**: the model is constrained to text extracted from the PDF. Scanned or image-based pages will produce empty chunks. Questions requiring cross-referencing multiple laws in a single answer may receive partial responses
+| Query | Result |
+|---|---|
+| A player scores directly from a throw-in | Correct |
+| A player in offside position does not touch the ball | Correct |
+| A goalkeeper drops and repicks the ball | Correct |
+| Goalkeeper handles deliberate back pass | Partially correct (cites trick clause instead of back pass rule) |
+| Penalty rebound scored by same player | Incorrect (retrieval fetches wrong chunk) |
+
+**Accuracy: 3/5 fully correct, 1/5 partially correct, 1/5 incorrect** on a representative set of scenarios.
+
+### Known limitations
+
+- The embedding model (all-MiniLM-L6-v2) is general-purpose and not trained on football rules. Queries that use different wording than the Laws text may retrieve the wrong chunks.
+- Multi-law scenarios (where the correct ruling requires cross-referencing two laws) often retrieve only one of the relevant chunks.
+- Sentence-aware chunking can still split a rule across chunk boundaries, causing the key sentence to be partially present in two different chunks but fully present in neither.
+
+### Potential improvements
+
+- **Larger embedding model**: `all-mpnet-base-v2` (768 dimensions) improves semantic matching at the cost of speed
+- **Hybrid search**: combine vector search with BM25 keyword search to improve recall for exact legal terms
+- **Cross-encoder re-ranking**: after retrieving top 10 chunks, re-rank them with a cross-encoder before passing to the LLM
+- **Increase TOP_K**: retrieving 7-10 chunks instead of 5 reduces the chance of missing the relevant passage
+- **Query rewriting**: rephrase the user's question using football law terminology before embedding
 
 ---
 
