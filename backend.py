@@ -23,7 +23,7 @@ MONGODB_DB         = os.getenv("MONGODB_DB")
 MONGODB_COLLECTION = os.getenv("MONGODB_COLLECTION")
 GROQ_API_KEY       = os.getenv("GROQ_API_KEY")
 
-EMBED_MODEL = "all-MiniLM-L6-v2"        # same model used in ingest.py
+EMBED_MODEL = "all-mpnet-base-v2"        # same model used in ingest.py, 768 dimensions
 CHAT_MODEL  = "llama-3.1-8b-instant"    # free Groq model, fast
 TOP_K       = 8                          # chunks to retrieve from MongoDB
 
